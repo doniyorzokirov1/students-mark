@@ -6,8 +6,46 @@ const modalForm = document.getElementById('add-form')
 const modalName = document.getElementById('name')
 const modalLastName = document.getElementById('lastname')
 const modalStudentMark = document.getElementById('mark')
+const elSort = document.getElementById('sortby')
 
 let count = document.querySelector('.count')
+let elFrom = document.getElementById('from')
+let elTo = document.getElementById('to')
+let date = new Date()
+
+Object.prototype.toMadeDate = function () {
+  let day = String(date.getDate()).padStart(2, 0)
+  let month = String(date.getMonth() + 1).padStart(2, 0)
+  let year = String(date.getFullYear())
+
+  return `${day}. ${month}. ${year}`
+}
+
+let sortFn = {
+  az: (a, b) => {
+    if (a.fullName > b.fullName) {
+      return 1
+    }
+    if (a.fullName < b.fullName) {
+      return -1
+    }
+    return 0
+  },
+  za: (a, b) => {
+    if (a.fullName > b.fullName) {
+      return -1
+    }
+    if (a.fullName < b.fullName) {
+      return 1
+    }
+    return 0
+  },
+  markToLow: (a, b) => b.mark - a.mark,
+  markToHigh: (a, b) => a.mark - b.mark,
+  date: (a, b) => b.markedDate.getTime() - a.markedDate.getTime(),
+}
+
+// --> starts functions
 
 const addStudent = (e) => {
   e.preventDefault()
@@ -15,7 +53,7 @@ const addStudent = (e) => {
     id: students.length + 100,
     fullName: modalName.value.trim() + ' ' + modalLastName.value.trim(),
     mark: Number(modalStudentMark.value.trim()),
-    markedDate: new Date('2021-12-06').toISOString(),
+    markedDate: toMadeDate(),
   }
   students.unshift(obj)
   modalName.value = null
@@ -24,8 +62,6 @@ const addStudent = (e) => {
 
   renderStudents(students)
 }
-
-modalForm.addEventListener('submit', addStudent)
 
 function renderStudents(arr) {
   elStudentList.innerHTML = null
@@ -40,7 +76,7 @@ function renderStudents(arr) {
 
     studentId.textContent = student.id
     studentName.innerHTML = student.fullName
-    studentMarkedDate.textContent = student.markedDate
+    studentMarkedDate.textContent = toMadeDate()
     studentMark.textContent = student.mark
 
     if (student.mark >= 104) {
@@ -56,40 +92,46 @@ function renderStudents(arr) {
   })
 }
 
-renderStudents(students)
-
 const onFilter = (e) => {
   e.preventDefault()
+
   let serachValue = elInput.value.trim()
-
-  if (!serachValue) {
-    return alert('Input some value')
-  }
-
   let regex = new RegExp(serachValue.toUpperCase(), 'gi')
-  let regexMark = new RegExp(serachValue, `ig`)
-
-  console.log(serachValue.toUpperCase())
-  console.log(serachValue)
-  console.log(regexMark)
   let filteredStudents = []
+
   students.forEach((student) => {
-    let upperCase = student.fullName.toUpperCase()
-    if (upperCase.match(regex)) {
+    let text = student.fullName.match(regex)
+
+    if (!serachValue) {
+      return filteredStudents.push(student)
+    }
+
+    if (student.fullName.match(regex)) {
       filteredStudents.unshift({
         ...student,
         fullName: student.fullName.replace(
-          serachValue,
-          `<mark>${serachValue}</mark>`,
+          text,
+          `<mark style="background-color: rgb(0, 208, 255); color: #fff;">${text}</mark>`,
         ),
       })
-      console.log(filteredStudents)
+      elInput.value = null
     }
   })
+
+  if (elFrom.value && elTo.value) {
+    filteredStudents = filteredStudents.filter(
+      (student) =>
+        student.mark >= elFrom.value - 0 && student.mark <= elTo.value - 0,
+    )
+  }
+
+  if (elSort.value) {
+    filteredStudents.sort(sortFn[elSort.value])
+  }
+
   renderStudents(filteredStudents)
 }
 
+renderStudents(students)
+modalForm.addEventListener('submit', addStudent)
 elForm.addEventListener('submit', onFilter)
-// .replace(
-//     serachValue,
-//     `<mark>${serachValue}</mark>`,

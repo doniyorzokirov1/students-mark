@@ -68,10 +68,12 @@
             <div class="mb-3">
               <label for="sortby" class="form-label">Sort by</label>
               <select class="form-select" id="sortby">
-                <option value="1">Name</option>
-                <option value="2">Mark: to lowest</option>
-                <option value="3">Mark: to highest</option>
-                <option value="4">Marked date</option>
+                <option value="" selected disabled>Selected sort type</option>
+                <option value="az">AZ-az</option>
+                <option value="za">ZA-za</option>
+                <option value="markToLow">Mark: to lowest</option>
+                <option value="markToHigh">Mark: to highest</option>
+                <option value="date">Marked date</option>
               </select>
             </div>
 
@@ -84,7 +86,10 @@
         <section class="col-9">
           <div class="d-flex justify-content-between align-items-baseline">
             <h2 class="h4 mb-4">Students list</h2>
-            <p><b>Count:</b> <b class="count"></b></p>
+            <p>
+              <b>Count:</b>
+              <b class="count"></b>
+            </p>
           </div>
           <p class="text-end">Average mark: 65%</p>
 
@@ -130,7 +135,7 @@
                 <label for="name" class="form-label">Name</label>
                 <input
                   type="text"
-                  class="form-control "
+                  class="form-control"
                   id="name"
                   required
                   placeholder="Falonchi"
